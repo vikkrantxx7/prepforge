@@ -6,5 +6,7 @@ export const CreateTopicSchema = z.object({
 	description: z.string(),
 	category: z.string().min(1, "Category is required"),
 });
-
 export type CreateTopicInput = z.infer<typeof CreateTopicSchema>;
+
+export const UpdateTopicSchema = CreateTopicSchema.partial();
+export type UpdateTopicInput = z.infer<typeof UpdateTopicSchema>;

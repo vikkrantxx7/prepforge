@@ -5,5 +5,6 @@ export type Topic = {
 	description: string;
 	category: string;
 	createdAt: string;
+	updatedAt?: string;
 	// TODO: add createdBy (userId) in Week 2
 };
