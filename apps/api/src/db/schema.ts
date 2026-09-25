@@ -6,8 +6,10 @@ export const topics = pgTable("topics", {
 	slug: varchar("slug", { length: 60 }).notNull(),
 	category: varchar("category", { length: 60 }).notNull(),
 	description: text("description"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at"),
+	createdAt: timestamp("created_at", { mode: "string", withTimezone: true })
+		.defaultNow()
+		.notNull(),
+	updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }),
 });
 
 export const questions = pgTable("questions", {
@@ -22,6 +24,8 @@ export const questions = pgTable("questions", {
 	hints: text("hints").array(),
 	relatedQuestionIds: text("related_question_ids").array(),
 	status: varchar("status", { length: 20 }).notNull().default("draft"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at"),
+	createdAt: timestamp("created_at", { mode: "string", withTimezone: true })
+		.defaultNow()
+		.notNull(),
+	updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }),
 });

@@ -16,7 +16,6 @@ export const CreateQuestionSchema = z.object({
 		good: z.string(),
 		standout: z.string(),
 	}),
-	status: z.enum(["draft", "published", "pending_review"]).default("draft"),
 	tags: z.array(z.string()),
 	recency: z.enum(["recent", "classic", "deprecated"]),
 	relatedQuestionIds: z.array(z.string()),

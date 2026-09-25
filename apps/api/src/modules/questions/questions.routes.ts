@@ -4,12 +4,24 @@ import {
 	type UpdateQuestionInput,
 	UpdateQuestionSchema,
 } from "@prepforge/shared";
+import { eq } from "drizzle-orm";
 import type { FastifyPluginAsync } from "fastify";
-import { questionsStore } from "./questions.store.js";
+import { db } from "../../db/index.js";
+import { questions } from "../../db/schema.js";
+
+function mapQuestion(row: typeof questions.$inferSelect) {
+	return {
+		...row,
+		createdAt: new Date(row.createdAt).toISOString(),
+		updatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : null,
+	};
+}
 
 export const questionsRoutes: FastifyPluginAsync = async (app) => {
 	app.get("/", async () => {
-		return { questions: Array.from(questionsStore.values()) };
+		const dbQuestions = await db.select().from(questions);
+
+		return { questions: dbQuestions.map(mapQuestion) };
 	});
 
 	app.post<{ Body: CreateQuestionInput }>("/", async (request, reply) => {
@@ -18,56 +30,75 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 		const newQuestion = {
 			id,
 			...parsed,
-			createdAt: new Date().toISOString(),
+			status: "draft" as const,
 		};
 
-		questionsStore.set(id, newQuestion);
+		const [inserted] = await db
+			.insert(questions)
+			.values(newQuestion)
+			.returning();
 
-		return reply.status(201).send({ question: newQuestion });
+		if (!inserted) {
+			return reply.status(500).send({ error: "Failed to create question" });
+		}
+
+		return reply.status(201).send({ question: mapQuestion(inserted) });
 	});
 
 	app.get<{ Params: { id: string } }>("/:id", async (request, reply) => {
 		const { id } = request.params;
-		const question = questionsStore.get(id);
+		const [question] = await db
+			.select()
+			.from(questions)
+			.where(eq(questions.id, id));
 
 		if (!question) {
 			return reply.status(404).send({ error: "Question not found" });
 		}
-		return { question };
+		return { question: mapQuestion(question) };
 	});
 
 	app.patch<{ Params: { id: string }; Body: UpdateQuestionInput }>(
 		"/:id",
 		async (request, reply) => {
 			const { id } = request.params;
-			const existingQuestion = questionsStore.get(id);
-
-			if (!existingQuestion) {
-				return reply.status(404).send({ error: "Question not found" });
-			}
 
 			const parsed = UpdateQuestionSchema.parse(request.body);
-			const updatedQuestion = {
-				...existingQuestion,
-				...parsed,
-				updatedAt: new Date().toISOString(),
-			};
 
-			questionsStore.set(id, updatedQuestion);
+			const [existing] = await db
+				.select()
+				.from(questions)
+				.where(eq(questions.id, id));
 
-			return { question: updatedQuestion };
+			if (!existing)
+				return reply.status(404).send({ error: "Question not found" });
+
+			const [updated] = await db
+				.update(questions)
+				.set({ ...parsed, updatedAt: new Date().toISOString() })
+				.where(eq(questions.id, id))
+				.returning();
+
+			if (!updated) {
+				return reply.status(500).send({ error: "Failed to update question" });
+			}
+
+			return { question: mapQuestion(updated) };
 		},
 	);
 
 	app.delete<{ Params: { id: string } }>("/:id", async (request, reply) => {
 		const { id } = request.params;
-		const existingQuestion = questionsStore.get(id);
+		const [existingQuestion] = await db
+			.select()
+			.from(questions)
+			.where(eq(questions.id, id));
 
 		if (!existingQuestion) {
 			return reply.status(404).send({ error: "Question not found" });
 		}
 
-		questionsStore.delete(id);
+		await db.delete(questions).where(eq(questions.id, id));
 
 		return reply.status(204).send();
 	});
@@ -76,21 +107,29 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 		"/:id/publish",
 		async (request, reply) => {
 			const { id } = request.params;
-			const existingQuestion = questionsStore.get(id);
+			const [existingQuestion] = await db
+				.select()
+				.from(questions)
+				.where(eq(questions.id, id));
 
 			if (!existingQuestion) {
 				return reply.status(404).send({ error: "Question not found" });
 			}
 
-			const publishedQuestion = {
-				...existingQuestion,
-				status: "published" as const,
-				updatedAt: new Date().toISOString(),
-			};
+			const [published] = await db
+				.update(questions)
+				.set({
+					status: "published",
+					updatedAt: new Date().toISOString(),
+				})
+				.where(eq(questions.id, id))
+				.returning();
 
-			questionsStore.set(id, publishedQuestion);
+			if (!published) {
+				return reply.status(500).send({ error: "Failed to publish question" });
+			}
 
-			return { question: publishedQuestion };
+			return { question: mapQuestion(published) };
 		},
 	);
 
@@ -98,21 +137,28 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 		"/:id/unpublish",
 		async (request, reply) => {
 			const { id } = request.params;
-			const existingQuestion = questionsStore.get(id);
+			const [existingQuestion] = await db
+				.select()
+				.from(questions)
+				.where(eq(questions.id, id));
 
 			if (!existingQuestion) {
 				return reply.status(404).send({ error: "Question not found" });
 			}
 
-			const unpublishedQuestion = {
-				...existingQuestion,
-				status: "draft" as const,
-				updatedAt: new Date().toISOString(),
-			};
+			const [unpublished] = await db
+				.update(questions)
+				.set({ status: "draft", updatedAt: new Date().toISOString() })
+				.where(eq(questions.id, id))
+				.returning();
 
-			questionsStore.set(id, unpublishedQuestion);
+			if (!unpublished) {
+				return reply
+					.status(500)
+					.send({ error: "Failed to unpublish question" });
+			}
 
-			return { question: unpublishedQuestion };
+			return { question: mapQuestion(unpublished) };
 		},
 	);
 };
