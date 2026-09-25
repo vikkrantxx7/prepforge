@@ -1,0 +1,27 @@
+import { jsonb, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+
+export const topics = pgTable("topics", {
+	id: text("id").primaryKey(),
+	name: varchar("name", { length: 60 }).notNull(),
+	slug: varchar("slug", { length: 60 }).notNull(),
+	category: varchar("category", { length: 60 }).notNull(),
+	description: text("description"),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+	updatedAt: timestamp("updated_at"),
+});
+
+export const questions = pgTable("questions", {
+	id: text("id").primaryKey(),
+	text: text("text").notNull(),
+	topicIds: text("topic_ids").array(),
+	difficultyContext: jsonb("difficulty_context"),
+	answerTiers: jsonb("answer_tiers"),
+	interviewerIntent: text("interviewer_intent"),
+	recency: varchar("recency", { length: 20 }),
+	tags: text("tags").array(),
+	hints: text("hints").array(),
+	relatedQuestionIds: text("related_question_ids").array(),
+	status: varchar("status", { length: 20 }).notNull().default("draft"),
+	createdAt: timestamp("created_at").defaultNow().notNull(),
+	updatedAt: timestamp("updated_at"),
+});
