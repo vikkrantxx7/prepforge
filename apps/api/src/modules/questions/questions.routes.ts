@@ -24,26 +24,30 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 		return { questions: dbQuestions.map(mapQuestion) };
 	});
 
-	app.post<{ Body: CreateQuestionInput }>("/", async (request, reply) => {
-		const parsed = CreateQuestionSchema.parse(request.body);
-		const id = crypto.randomUUID();
-		const newQuestion = {
-			id,
-			...parsed,
-			status: "draft" as const,
-		};
+	app.post<{ Body: CreateQuestionInput }>(
+		"/",
+		{ preHandler: [app.authenticate] },
+		async (request, reply) => {
+			const parsed = CreateQuestionSchema.parse(request.body);
+			const id = crypto.randomUUID();
+			const newQuestion = {
+				id,
+				...parsed,
+				status: "draft" as const,
+			};
 
-		const [inserted] = await db
-			.insert(questions)
-			.values(newQuestion)
-			.returning();
+			const [inserted] = await db
+				.insert(questions)
+				.values(newQuestion)
+				.returning();
 
-		if (!inserted) {
-			return reply.status(500).send({ error: "Failed to create question" });
-		}
+			if (!inserted) {
+				return reply.status(500).send({ error: "Failed to create question" });
+			}
 
-		return reply.status(201).send({ question: mapQuestion(inserted) });
-	});
+			return reply.status(201).send({ question: mapQuestion(inserted) });
+		},
+	);
 
 	app.get<{ Params: { id: string } }>("/:id", async (request, reply) => {
 		const { id } = request.params;
@@ -60,6 +64,7 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 
 	app.patch<{ Params: { id: string }; Body: UpdateQuestionInput }>(
 		"/:id",
+		{ preHandler: [app.authenticate] },
 		async (request, reply) => {
 			const { id } = request.params;
 
@@ -87,24 +92,29 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 		},
 	);
 
-	app.delete<{ Params: { id: string } }>("/:id", async (request, reply) => {
-		const { id } = request.params;
-		const [existingQuestion] = await db
-			.select()
-			.from(questions)
-			.where(eq(questions.id, id));
+	app.delete<{ Params: { id: string } }>(
+		"/:id",
+		{ preHandler: [app.authenticate] },
+		async (request, reply) => {
+			const { id } = request.params;
+			const [existingQuestion] = await db
+				.select()
+				.from(questions)
+				.where(eq(questions.id, id));
 
-		if (!existingQuestion) {
-			return reply.status(404).send({ error: "Question not found" });
-		}
+			if (!existingQuestion) {
+				return reply.status(404).send({ error: "Question not found" });
+			}
 
-		await db.delete(questions).where(eq(questions.id, id));
+			await db.delete(questions).where(eq(questions.id, id));
 
-		return reply.status(204).send();
-	});
+			return reply.status(204).send();
+		},
+	);
 
 	app.post<{ Params: { id: string } }>(
 		"/:id/publish",
+		{ preHandler: [app.authenticate] },
 		async (request, reply) => {
 			const { id } = request.params;
 			const [existingQuestion] = await db
@@ -135,6 +145,7 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 
 	app.post<{ Params: { id: string } }>(
 		"/:id/unpublish",
+		{ preHandler: [app.authenticate] },
 		async (request, reply) => {
 			const { id } = request.params;
 			const [existingQuestion] = await db

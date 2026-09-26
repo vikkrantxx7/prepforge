@@ -23,19 +23,23 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
 		return { topics: dbTopics.map(mapTopic) };
 	});
 
-	app.post<{ Body: CreateTopicInput }>("/", async (request, reply) => {
-		const parsed = CreateTopicSchema.parse(request.body);
-		const id = crypto.randomUUID();
-		const topic = { id, ...parsed };
+	app.post<{ Body: CreateTopicInput }>(
+		"/",
+		{ preHandler: [app.authenticate] },
+		async (request, reply) => {
+			const parsed = CreateTopicSchema.parse(request.body);
+			const id = crypto.randomUUID();
+			const topic = { id, ...parsed };
 
-		const [inserted] = await db.insert(topics).values(topic).returning();
+			const [inserted] = await db.insert(topics).values(topic).returning();
 
-		if (!inserted) {
-			return reply.status(500).send({ error: "Failed to create topic" });
-		}
+			if (!inserted) {
+				return reply.status(500).send({ error: "Failed to create topic" });
+			}
 
-		return reply.status(201).send({ topic: mapTopic(inserted) });
-	});
+			return reply.status(201).send({ topic: mapTopic(inserted) });
+		},
+	);
 
 	app.get<{ Params: { id: string } }>("/:id", async (request, reply) => {
 		const { id } = request.params;
@@ -50,6 +54,7 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
 
 	app.patch<{ Params: { id: string }; Body: UpdateTopicInput }>(
 		"/:id",
+		{ preHandler: [app.authenticate] },
 		async (request, reply) => {
 			const { id } = request.params;
 			const [existingTopic] = await db

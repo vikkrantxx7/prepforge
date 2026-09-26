@@ -1,7 +1,9 @@
 import cors from "@fastify/cors";
 import Fastify from "fastify";
+import { authRoutes } from "./modules/auth/auth.routes.js";
 import { questionsRoutes } from "./modules/questions/questions.routes.js";
 import { topicsRoutes } from "./modules/topics/topics.routes.js";
+import { jwtPlugin } from "./plugins/jwt.js";
 
 export function buildApp() {
 	const app = Fastify({
@@ -16,6 +18,8 @@ export function buildApp() {
 		return { status: "ok" };
 	});
 
+	app.register(jwtPlugin);
+	app.register(authRoutes, { prefix: "/api/v1/auth" });
 	app.register(topicsRoutes, { prefix: "/api/v1/topics" });
 	app.register(questionsRoutes, { prefix: "/api/v1/questions" });
 
