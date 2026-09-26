@@ -3,7 +3,7 @@ import { jsonb, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 export const topics = pgTable("topics", {
 	id: text("id").primaryKey(),
 	name: varchar("name", { length: 60 }).notNull(),
-	slug: varchar("slug", { length: 60 }).notNull(),
+	slug: varchar("slug", { length: 60 }).notNull().unique(),
 	category: varchar("category", { length: 60 }).notNull(),
 	description: text("description"),
 	createdAt: timestamp("created_at", { mode: "string", withTimezone: true })

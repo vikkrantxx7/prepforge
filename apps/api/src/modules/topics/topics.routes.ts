@@ -31,13 +31,29 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
 			const id = crypto.randomUUID();
 			const topic = { id, ...parsed };
 
-			const [inserted] = await db.insert(topics).values(topic).returning();
+			try {
+				const [inserted] = await db.insert(topics).values(topic).returning();
 
-			if (!inserted) {
-				return reply.status(500).send({ error: "Failed to create topic" });
+				if (!inserted) {
+					return reply.status(500).send({ error: "Failed to create topic" });
+				}
+
+				return reply.status(201).send({ topic: mapTopic(inserted) });
+			} catch (error) {
+				if (
+					typeof error === "object" &&
+					error !== null &&
+					"cause" in error &&
+					typeof error.cause === "object" &&
+					error.cause !== null &&
+					"code" in error.cause &&
+					error.cause.code === "23505"
+				) {
+					return reply.status(409).send({ error: "Slug already exists" });
+				}
+
+				throw error;
 			}
-
-			return reply.status(201).send({ topic: mapTopic(inserted) });
 		},
 	);
 
@@ -68,17 +84,33 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
 
 			const parsed = UpdateTopicSchema.parse(request.body);
 
-			const [updatedTopic] = await db
-				.update(topics)
-				.set({ ...parsed, updatedAt: new Date().toISOString() })
-				.where(eq(topics.id, id))
-				.returning();
+			try {
+				const [updatedTopic] = await db
+					.update(topics)
+					.set({ ...parsed, updatedAt: new Date().toISOString() })
+					.where(eq(topics.id, id))
+					.returning();
 
-			if (!updatedTopic) {
-				return reply.status(500).send({ error: "Failed to update topic" });
+				if (!updatedTopic) {
+					return reply.status(500).send({ error: "Failed to update topic" });
+				}
+
+				return { topic: mapTopic(updatedTopic) };
+			} catch (error) {
+				if (
+					typeof error === "object" &&
+					error !== null &&
+					"cause" in error &&
+					typeof error.cause === "object" &&
+					error.cause !== null &&
+					"code" in error.cause &&
+					error.cause.code === "23505"
+				) {
+					return reply.status(409).send({ error: "Slug already exists" });
+				}
+
+				throw error;
 			}
-
-			return { topic: mapTopic(updatedTopic) };
 		},
 	);
 
