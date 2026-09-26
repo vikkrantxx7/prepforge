@@ -30,9 +30,12 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 		async (request, reply) => {
 			const parsed = CreateQuestionSchema.parse(request.body);
 			const id = crypto.randomUUID();
+			const sanitizedTags = [...new Set(parsed.tags.map((s) => s.trim().toLowerCase()).filter(Boolean))];
+
 			const newQuestion = {
 				id,
 				...parsed,
+				tags: sanitizedTags,
 				status: "draft" as const,
 			};
 
@@ -69,6 +72,7 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 			const { id } = request.params;
 
 			const parsed = UpdateQuestionSchema.parse(request.body);
+			const sanitizedTags = parsed.tags ? [...new Set(parsed.tags.map((s) => s.trim().toLowerCase()).filter(Boolean))] : undefined;
 
 			const [existing] = await db
 				.select()
@@ -80,7 +84,7 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
 
 			const [updated] = await db
 				.update(questions)
-				.set({ ...parsed, updatedAt: new Date().toISOString() })
+				.set({ ...parsed, ...(sanitizedTags !== undefined && { tags: sanitizedTags }), updatedAt: new Date().toISOString() })
 				.where(eq(questions.id, id))
 				.returning();
 
