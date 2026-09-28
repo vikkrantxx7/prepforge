@@ -11,6 +11,15 @@ declare module "fastify" {
 	}
 }
 
+declare module "@fastify/jwt" {
+	interface FastifyJWT {
+		user: {
+			userId: string;
+			role: string;
+		};
+	}
+}
+
 export const jwtPlugin = fp(async (app: FastifyInstance) => {
 	const secret = process.env.JWT_SECRET;
 

@@ -10,5 +10,9 @@ export {
 	type UpdateTopicInput,
 	UpdateTopicSchema,
 } from "./schemas/topic.schema.js";
-export type { Question } from "./types/question.js";
-export type { Topic } from "./types/topic.js";
+export {
+	type CreateUserInput,
+	CreateUserSchema,
+	type UpdateUserInput,
+	UpdateUserSchema,
+} from "./schemas/user.schema.js";

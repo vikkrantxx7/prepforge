@@ -29,3 +29,14 @@ export const questions = pgTable("questions", {
 		.notNull(),
 	updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }),
 });
+
+export const users = pgTable("users", {
+	id: text("id").primaryKey(),
+	email: varchar("email", { length: 255 }).notNull().unique(),
+	passwordHash: text("password_hash").notNull(),
+	role: varchar("role", { length: 50 }).notNull().default("user"),
+	createdAt: timestamp("created_at", { mode: "string", withTimezone: true })
+		.defaultNow()
+		.notNull(),
+	updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }),
+});
