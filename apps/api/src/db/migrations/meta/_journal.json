@@ -29,6 +29,13 @@
       "when": 1790533541908,
       "tag": "0003_whole_scrambler",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790595327133,
+      "tag": "0004_rare_lockjaw",
+      "breakpoints": true
     }
   ]
 }

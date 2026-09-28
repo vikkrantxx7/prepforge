@@ -1,4 +1,11 @@
-import { jsonb, pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+	jsonb,
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+	varchar,
+} from "drizzle-orm/pg-core";
 
 export const topics = pgTable("topics", {
 	id: text("id").primaryKey(),
@@ -40,3 +47,17 @@ export const users = pgTable("users", {
 		.notNull(),
 	updatedAt: timestamp("updated_at", { mode: "string", withTimezone: true }),
 });
+
+export const userProgress = pgTable(
+	"user_progress",
+	{
+		userId: text("user_id").notNull(),
+		questionId: text("question_id").notNull(),
+		status: varchar("status", { length: 20 }).notNull(),
+		lastSeen: timestamp("last_seen", {
+			mode: "string",
+			withTimezone: true,
+		}).notNull(),
+	},
+	(table) => [primaryKey({ columns: [table.userId, table.questionId] })],
+);
