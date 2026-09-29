@@ -1,3 +1,4 @@
+export { progressSchema } from "./schemas/progress.schema.js";
 export {
 	type CreateQuestionInput,
 	CreateQuestionSchema,

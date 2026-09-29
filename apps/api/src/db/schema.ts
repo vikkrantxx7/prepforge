@@ -51,8 +51,12 @@ export const users = pgTable("users", {
 export const userProgress = pgTable(
 	"user_progress",
 	{
-		userId: text("user_id").notNull(),
-		questionId: text("question_id").notNull(),
+		userId: text("user_id")
+			.notNull()
+			.references(() => users.id, { onDelete: "cascade" }),
+		questionId: text("question_id")
+			.notNull()
+			.references(() => questions.id, { onDelete: "cascade" }),
 		status: varchar("status", { length: 20 }).notNull(),
 		lastSeen: timestamp("last_seen", {
 			mode: "string",

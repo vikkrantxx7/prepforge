@@ -11,7 +11,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
 		const [user] = await db
 			.select()
 			.from(users)
-			.where(eq(users.id, request.user?.userId));
+			.where(eq(users.id, request.user.userId));
 
 		if (!user) {
 			return reply.status(404).send({ error: "User not found" });

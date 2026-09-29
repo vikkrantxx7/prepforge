@@ -36,6 +36,13 @@
       "when": 1790595327133,
       "tag": "0004_rare_lockjaw",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790668759274,
+      "tag": "0005_luxuriant_paibok",
+      "breakpoints": true
     }
   ]
 }
