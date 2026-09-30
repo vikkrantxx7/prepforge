@@ -1,0 +1,36 @@
+type Topic {
+  id: String!
+  name: String!
+  slug: String!
+  category: String!
+  description: String
+  createdAt: String!
+}
+
+type Question {
+  id: String!
+  text: String!
+  topicIds: [String!]
+  tags: [String!]
+  status: String!
+  recency: String
+  createdAt: String!
+}
+
+type UserProgress {
+  questionId: String!
+  status: String!
+  lastSeen: String!
+}
+
+type Query {
+    topics(category: String): [Topic!]!
+    topic(slug: String!): Topic
+    questions(topicId: String): [Question!]!
+    question(questionId: String!): Question
+    myProgress: [UserProgress!]!
+}
+
+type Mutation {
+    updateProgress(questionId: String!, status: String!): UserProgress!
+}

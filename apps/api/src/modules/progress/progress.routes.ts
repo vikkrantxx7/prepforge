@@ -1,6 +1,7 @@
 import { progressSchema } from "@prepforge/shared";
 import { eq } from "drizzle-orm";
 import type { FastifyPluginAsync } from "fastify";
+import { INVALID_USER_OR_QUESTION_ID_ERROR } from "../../constants/errors.js";
 import { db } from "../../db/index.js";
 import { userProgress } from "../../db/schema.js";
 
@@ -60,7 +61,7 @@ export const progressRoutes: FastifyPluginAsync = async (app) => {
 				) {
 					return reply
 						.status(404)
-						.send({ error: "Invalid user or question ID" });
+						.send({ error: INVALID_USER_OR_QUESTION_ID_ERROR });
 				}
 
 				throw error;

@@ -1,6 +1,7 @@
 import fastifyJwt from "@fastify/jwt";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
+import { UNAUTHORIZED_ERROR } from "../constants/errors.js";
 
 export const jwtPlugin = fp(async (app: FastifyInstance) => {
 	const secret = process.env.JWT_SECRET;
@@ -17,7 +18,7 @@ export const jwtPlugin = fp(async (app: FastifyInstance) => {
 			try {
 				await request.jwtVerify();
 			} catch (_err) {
-				reply.status(401).send({ error: "Unauthorized" });
+				reply.status(401).send({ error: UNAUTHORIZED_ERROR });
 			}
 		},
 	);

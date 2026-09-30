@@ -57,9 +57,9 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
 		},
 	);
 
-	app.get<{ Params: { id: string } }>("/:id", async (request, reply) => {
-		const { id } = request.params;
-		const [topic] = await db.select().from(topics).where(eq(topics.id, id));
+	app.get<{ Params: { slug: string } }>("/:slug", async (request, reply) => {
+		const { slug } = request.params;
+		const [topic] = await db.select().from(topics).where(eq(topics.slug, slug));
 
 		if (!topic) {
 			return reply.status(404).send({ error: "Topic not found" });
@@ -68,15 +68,15 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
 		return { topic: mapTopic(topic) };
 	});
 
-	app.patch<{ Params: { id: string }; Body: UpdateTopicInput }>(
-		"/:id",
+	app.patch<{ Params: { slug: string }; Body: UpdateTopicInput }>(
+		"/:slug",
 		{ preHandler: [app.authenticate] },
 		async (request, reply) => {
-			const { id } = request.params;
+			const { slug } = request.params;
 			const [existingTopic] = await db
 				.select()
 				.from(topics)
-				.where(eq(topics.id, id));
+				.where(eq(topics.slug, slug));
 
 			if (!existingTopic) {
 				return reply.status(404).send({ error: "Topic not found" });
@@ -88,7 +88,7 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
 				const [updatedTopic] = await db
 					.update(topics)
 					.set({ ...parsed, updatedAt: new Date().toISOString() })
-					.where(eq(topics.id, id))
+					.where(eq(topics.slug, slug))
 					.returning();
 
 				if (!updatedTopic) {
@@ -114,18 +114,18 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
 		},
 	);
 
-	app.delete<{ Params: { id: string } }>("/:id", async (request, reply) => {
-		const { id } = request.params;
+	app.delete<{ Params: { slug: string } }>("/:slug", async (request, reply) => {
+		const { slug } = request.params;
 		const [existingTopic] = await db
 			.select()
 			.from(topics)
-			.where(eq(topics.id, id));
+			.where(eq(topics.slug, slug));
 
 		if (!existingTopic) {
 			return reply.status(404).send({ error: "Topic not found" });
 		}
 
-		await db.delete(topics).where(eq(topics.id, id));
+		await db.delete(topics).where(eq(topics.slug, slug));
 
 		return reply.status(204).send();
 	});
