@@ -15,6 +15,7 @@ type Question {
   status: String!
   recency: String
   createdAt: String!
+  progress: UserProgress
 }
 
 type UserProgress {

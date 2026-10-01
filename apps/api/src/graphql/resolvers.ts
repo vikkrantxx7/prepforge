@@ -1,4 +1,5 @@
 import { progressSchema } from "@prepforge/shared";
+import type DataLoader from "dataloader";
 import { arrayContains, eq } from "drizzle-orm";
 import { UNAUTHORIZED_ERROR } from "../constants/errors.js";
 import { db } from "../db/index.js";
@@ -55,6 +56,26 @@ export const resolvers = {
 				.select()
 				.from(userProgress)
 				.where(eq(userProgress.userId, context.user.userId));
+		},
+	},
+	Question: {
+		progress: async (
+			parent: { id: string },
+			_: unknown,
+			context: {
+				progressLoader: DataLoader<
+					string,
+					(typeof userProgress)[] | null
+				> | null;
+			},
+		) => {
+			if (!context.progressLoader) {
+				console.log("No progress loader available");
+				return null;
+			}
+			console.log("Progress loader available", parent.id);
+
+			return context.progressLoader.load(parent.id);
 		},
 	},
 	Mutation: {

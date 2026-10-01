@@ -6,6 +6,7 @@ import {
 	INVALID_USER_OR_QUESTION_ID_ERROR,
 	UNAUTHORIZED_ERROR,
 } from "../constants/errors.js";
+import { createProgressLoader } from "../graphql/dataloaders.js";
 import { resolvers } from "../graphql/resolvers.js";
 
 const schema = readFileSync(
@@ -24,7 +25,13 @@ export const graphqlPlugin: FastifyPluginAsync = async (app) => {
 			} catch (_err) {
 				// guest — user stays undefined
 			}
-			return { user: request.user };
+
+			return {
+				user: request.user,
+				progressLoader: request.user
+					? createProgressLoader(request.user.userId)
+					: null,
+			};
 		},
 		errorFormatter: (execution) => {
 			const normalizedErrors = execution.errors?.map((error) => {
