@@ -25,13 +25,13 @@ type UserProgress {
 }
 
 type Query {
-    topics(category: String): [Topic!]!
-    topic(slug: String!): Topic
-    questions(topicId: String): [Question!]!
-    question(questionId: String!): Question
-    myProgress: [UserProgress!]!
+  topics(category: String): [Topic!]!
+  topic(slug: String!): Topic
+  questions(topicId: String): [Question!]!
+  question(questionId: String!): Question
+  myProgress: [UserProgress!]!
 }
 
 type Mutation {
-    updateProgress(questionId: String!, status: String!): UserProgress!
+  updateProgress(questionId: String!, status: String!): UserProgress!
 }

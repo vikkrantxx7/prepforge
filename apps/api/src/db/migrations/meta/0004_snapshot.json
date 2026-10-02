@@ -152,9 +152,7 @@
         "topics_slug_unique": {
           "name": "topics_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -195,10 +193,7 @@
       "compositePrimaryKeys": {
         "user_progress_user_id_question_id_pk": {
           "name": "user_progress_user_id_question_id_pk",
-          "columns": [
-            "user_id",
-            "question_id"
-          ]
+          "columns": ["user_id", "question_id"]
         }
       },
       "uniqueConstraints": {},
@@ -256,9 +251,7 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},

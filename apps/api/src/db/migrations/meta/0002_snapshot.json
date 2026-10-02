@@ -152,9 +152,7 @@
         "topics_slug_unique": {
           "name": "topics_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
