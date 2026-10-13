@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, House, ChartColumnBig, UserRound } from 'lucide-react';
+import { BookOpen, House, UserRound } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -9,7 +9,6 @@ import { cn } from '@/shared/lib/utils';
 const items = [
   { label: 'Home', href: '/', icon: House },
   { label: 'Topics', href: '/topics', icon: BookOpen },
-  { label: 'Practice', href: '/practice', icon: ChartColumnBig },
   { label: 'Profile', href: '/profile', icon: UserRound },
 ] as const;
 
