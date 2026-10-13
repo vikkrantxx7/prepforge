@@ -1,7 +1,15 @@
+import { CategoriesSection } from '@/widgets/categoriesSection/CategoriesSection';
+import { HeroSection } from '@/widgets/heroSection/HeroSection';
+import { MobileBottomNav } from '@/widgets/mobileBottomNav/MobileBottomNav';
+import { RecentlyAddedSection } from '@/widgets/recentlyAddedSection/RecentlyAddedSection';
+
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-4xl font-bold">PrepForge</h1>
+    <main className="min-h-screen bg-background pb-22 md:pb-0">
+      <HeroSection />
+      <CategoriesSection />
+      <RecentlyAddedSection />
+      <MobileBottomNav />
     </main>
   );
 }
