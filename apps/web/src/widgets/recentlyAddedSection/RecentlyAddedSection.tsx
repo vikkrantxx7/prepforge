@@ -1,6 +1,14 @@
 import { ArrowRight, Clock3, Tag } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui/Card';
 
 type RecentQuestion = {
   id: string;
@@ -73,69 +81,75 @@ export const RecentlyAddedSection = () => {
 
       <div className="hidden grid-cols-3 gap-4 md:grid">
         {recentlyAdded.map((question) => (
-          <Link
-            key={question.id}
-            href={'/topics' as Route}
-            className="rounded-2xl border border-border/80 bg-card/80 p-5 transition-all hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-lg"
-          >
-            <div className="mb-4 flex items-center justify-between gap-2">
-              <span
-                className={`rounded-full px-2.5 py-1 text-xs font-semibold ${difficultyClasses[question.difficulty]}`}
-              >
-                {question.difficulty}
-              </span>
-              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <Tag className="h-3.5 w-3.5" />
-                {question.category}
-              </span>
-            </div>
+          <Link key={question.id} href={'/topics' as Route} className="group">
+            <Card className="h-full rounded-2xl bg-card/80 py-5 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(5)]">
+              <CardHeader className="gap-0">
+                <div className="mb-4 flex items-center justify-between gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${difficultyClasses[question.difficulty]}`}
+                  >
+                    {question.difficulty}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                    <Tag className="h-3.5 w-3.5" />
+                    {question.category}
+                  </span>
+                </div>
 
-            <p className="mb-2 min-h-14 text-2xl leading-tight font-semibold text-foreground">
-              {question.text}
-            </p>
-            <p className="mb-5 text-sm text-muted-foreground">
-              Understand key concepts and walk through a practical explanation strategy.
-            </p>
+                <CardTitle className="mb-2 min-h-14 text-2xl leading-tight font-semibold text-foreground">
+                  {question.text}
+                </CardTitle>
+                <CardDescription className="mb-5 text-sm">
+                  Understand key concepts and walk through a practical explanation strategy.
+                </CardDescription>
+              </CardHeader>
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1">
-                <Clock3 className="h-3.5 w-3.5" />
-                {question.minutes} min
-              </span>
-              <span>Added {question.addedDaysAgo} days ago</span>
-            </div>
+              <CardFooter className="justify-between text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Clock3 className="h-3.5 w-3.5" />
+                  {question.minutes} min
+                </span>
+                <span>Added {question.addedDaysAgo} days ago</span>
+              </CardFooter>
+            </Card>
           </Link>
         ))}
       </div>
 
-      <div className="rounded-2xl border border-border/80 bg-card/80 p-4 md:hidden">
-        <div className="mb-3 flex items-center gap-2 text-xs">
-          <span className="inline-flex rounded-full bg-accent/15 px-2.5 py-1 font-semibold text-accent">
-            {featured.difficulty}
-          </span>
-          <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
-            {featured.category}
-          </span>
-        </div>
+      <Card className="rounded-2xl bg-card/80 py-4 ring-border/80 md:hidden [--card-spacing:--spacing(4)]">
+        <CardHeader className="gap-0">
+          <div className="mb-3 flex items-center gap-2 text-xs">
+            <span className="inline-flex rounded-full bg-accent/15 px-2.5 py-1 font-semibold text-accent">
+              {featured.difficulty}
+            </span>
+            <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
+              {featured.category}
+            </span>
+          </div>
 
-        <p className="mb-2 text-3xl leading-tight font-semibold text-foreground">{featured.text}</p>
-        <p className="mb-5 text-sm text-muted-foreground">
-          Understand how JavaScript handles asynchronous operations using the event loop, call
-          stack, task queue and microtask queue.
-        </p>
+          <CardTitle className="mb-2 text-3xl leading-tight font-semibold text-foreground">
+            {featured.text}
+          </CardTitle>
+          <CardDescription className="mb-5 text-sm">
+            Understand how JavaScript handles asynchronous operations using the event loop, call
+            stack, task queue and microtask queue.
+          </CardDescription>
+        </CardHeader>
 
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1">
-            <Clock3 className="h-3.5 w-3.5" />
-            {featured.minutes} min read
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <Tag className="h-3.5 w-3.5" />
-            Added {featured.addedDaysAgo} days ago
-          </span>
-        </div>
+        <CardContent className="justify-between text-xs text-muted-foreground">
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center gap-1">
+              <Clock3 className="h-3.5 w-3.5" />
+              {featured.minutes} min read
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <Tag className="h-3.5 w-3.5" />
+              Added {featured.addedDaysAgo} days ago
+            </span>
+          </div>
+        </CardContent>
 
-        <div className="mt-4 flex justify-end">
+        <CardFooter className="justify-end">
           <Link
             href={'/topics' as Route}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-muted-foreground"
@@ -143,8 +157,8 @@ export const RecentlyAddedSection = () => {
             <ArrowRight className="h-4 w-4" />
             <span className="sr-only">Open featured question</span>
           </Link>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </section>
   );
 };

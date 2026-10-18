@@ -2,6 +2,14 @@ import { ArrowRight, BookOpenCheck, Boxes, Cpu, Database, FileText } from 'lucid
 import type { Route } from 'next';
 import Link from 'next/link';
 import type { ComponentType } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui/Card';
 
 type Category = {
   name: string;
@@ -65,7 +73,7 @@ export const CategoriesSection = () => {
         </Link>
       </div>
 
-      <div className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
+      <div className="-mx-4 overflow-x-auto px-4 pt-1 pb-1 md:mx-0 md:overflow-visible md:px-0">
         <div className="flex w-max gap-3 md:grid md:w-full md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           {categories.map((category) => {
             const Icon = category.icon;
@@ -74,35 +82,41 @@ export const CategoriesSection = () => {
               <Link
                 key={category.name}
                 href={`/topics?category=${encodeURIComponent(category.name)}` as Route}
-                className="group relative w-[16rem] rounded-2xl border border-border/80 bg-card/80 p-4 transition-all hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-lg md:w-auto md:p-5"
+                className="group w-[16rem] md:w-auto"
               >
-                <div className="mb-4 inline-flex rounded-lg border border-accent/30 bg-accent/12 p-2.5 text-accent">
-                  <Icon className="h-5 w-5" />
-                </div>
+                <Card className="relative h-full rounded-2xl bg-card/80 p-4 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:shadow-lg group-hover:ring-accent/50 md:p-5">
+                  <CardHeader className="gap-0 p-0">
+                    <div className="mb-4 inline-flex w-fit rounded-lg border border-accent/30 bg-accent/12 p-2.5 text-accent">
+                      <Icon className="h-5 w-5" />
+                    </div>
 
-                <div className="absolute top-4 right-4 hidden h-7 w-7 items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition-colors group-hover:text-foreground md:flex">
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </div>
+                    <div className="absolute top-4 right-4 hidden h-7 w-7 items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition-colors group-hover:text-foreground md:flex">
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </div>
 
-                <h3 className="mb-1 text-lg font-semibold">{category.name}</h3>
-                <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
-                  {category.description}
-                </p>
+                    <CardTitle className="mb-1 text-lg">{category.name}</CardTitle>
+                    <CardDescription className="mb-4 leading-relaxed">
+                      {category.description}
+                    </CardDescription>
+                  </CardHeader>
 
-                <p className="text-sm text-muted-foreground md:hidden">
-                  {category.questionCount} questions
-                </p>
+                  <CardContent className="p-0 md:hidden">
+                    <p className="text-sm text-muted-foreground">
+                      {category.questionCount} questions
+                    </p>
+                  </CardContent>
 
-                <div className="hidden items-center gap-4 text-xs text-muted-foreground md:flex">
-                  <span className="inline-flex items-center gap-1">
-                    <BookOpenCheck className="h-3.5 w-3.5" />
-                    {category.topicCount} Topics
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <FileText className="h-3.5 w-3.5" />
-                    {category.questionCount} Questions
-                  </span>
-                </div>
+                  <CardFooter className="hidden items-center gap-4 p-0 text-xs text-muted-foreground md:flex">
+                    <span className="inline-flex items-center gap-1">
+                      <BookOpenCheck className="h-3.5 w-3.5" />
+                      {category.topicCount} Topics
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <FileText className="h-3.5 w-3.5" />
+                      {category.questionCount} Questions
+                    </span>
+                  </CardFooter>
+                </Card>
               </Link>
             );
           })}
