@@ -92,19 +92,8 @@ export const HeroSection = () => {
             className={buttonVariants({ size: 'lg', className: 'h-12 gap-2 px-5 text-base' })}
           >
             <Play className="h-4 w-4" />
-            Start Practicing
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href={'/topics' as Route}
-            className={buttonVariants({
-              size: 'lg',
-              variant: 'outline',
-              className: 'h-12 gap-2 px-5 text-base bg-background/35 backdrop-blur-sm',
-            })}
-          >
-            <BookOpen className="h-4 w-4" />
             Explore Topics
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 

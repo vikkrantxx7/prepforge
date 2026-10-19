@@ -16,6 +16,7 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
     { preHandler: [app.authenticate] },
     async (request, reply) => {
       const result = await service.create(request.body);
+
       return reply.status(201).send(result);
     },
   );
@@ -37,6 +38,7 @@ export const topicsRoutes: FastifyPluginAsync = async (app) => {
     { preHandler: [app.authenticate] },
     async (request, reply) => {
       await service.delete(request.params.slug);
+
       return reply.status(204).send();
     },
   );

@@ -2,7 +2,6 @@ import { ArrowRight, Clock3, Tag } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/Card';
-import { CardSkeleton } from '@/shared/ui/CardSkeleton';
 
 type RecentQuestion = {
   id: string;
@@ -13,52 +12,14 @@ type RecentQuestion = {
   addedDaysAgo: number;
 };
 
-const recentlyAdded: RecentQuestion[] = [
-  {
-    id: 'react-reconciliation-scenarios',
-    difficulty: 'Medium',
-    category: 'React',
-    text: "How does React's reconciliation algorithm work?",
-    minutes: 8,
-    addedDaysAgo: 2,
-  },
-  {
-    id: 'event-loop-priority-puzzle',
-    difficulty: 'Medium',
-    category: 'JavaScript',
-    text: 'Explain the event loop in JavaScript.',
-    minutes: 10,
-    addedDaysAgo: 4,
-  },
-  {
-    id: 'system-design-url-shortener',
-    difficulty: 'Medium',
-    category: 'System Design',
-    text: 'Design a URL Shortening Service.',
-    minutes: 15,
-    addedDaysAgo: 4,
-  },
-];
-
 const difficultyClasses: Record<RecentQuestion['difficulty'], string> = {
   Easy: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-200',
   Medium: 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200',
   Hard: 'bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-200',
 };
 
-export const RecentlyAddedSection = () => {
-  // Temporary toggle for loading-state UI preview.
-  const isLoading = true;
-  const desktopSkeletonKeys = [
-    'recent-desktop-skeleton-1',
-    'recent-desktop-skeleton-2',
-    'recent-desktop-skeleton-3',
-  ] as const;
-  const mobileSkeletonKeys = [
-    'recent-mobile-skeleton-1',
-    'recent-mobile-skeleton-2',
-    'recent-mobile-skeleton-3',
-  ] as const;
+export const RecentlyAddedSection = ({ questions }: { questions: RecentQuestion[] }) => {
+  const recentQuestions = questions ?? [];
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-10 md:px-6 md:py-12">
@@ -81,95 +42,81 @@ export const RecentlyAddedSection = () => {
       </div>
 
       <div className="hidden grid-cols-3 gap-4 md:grid">
-        {isLoading
-          ? desktopSkeletonKeys.map((key) => (
-              <CardSkeleton
-                key={key}
-                className="h-full bg-card/80 py-5 ring-border/80 [--card-spacing:--spacing(5)]"
-              />
-            ))
-          : recentlyAdded.map((question) => (
-              <Link key={question.id} href={'/topics' as Route} className="group">
-                <Card className="h-full rounded-2xl bg-card/80 py-5 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(5)]">
-                  <CardHeader className="gap-0">
-                    <div className="mb-4 flex items-center justify-between gap-2">
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${difficultyClasses[question.difficulty]}`}
-                      >
-                        {question.difficulty}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                        <Tag className="h-3.5 w-3.5" />
-                        {question.category}
-                      </span>
-                    </div>
+        {recentQuestions.map((question) => (
+          <Link key={question.id} href={'/topics' as Route} className="group">
+            <Card className="h-full rounded-2xl bg-card/80 py-5 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(5)]">
+              <CardHeader className="gap-0">
+                <div className="mb-4 flex items-center justify-between gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${difficultyClasses[question.difficulty]}`}
+                  >
+                    {question.difficulty}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                    <Tag className="h-3.5 w-3.5" />
+                    {question.category}
+                  </span>
+                </div>
 
-                    <CardTitle className="mb-2 min-h-14 text-2xl leading-tight font-semibold text-foreground">
-                      {question.text}
-                    </CardTitle>
-                    <CardDescription className="mb-5 text-sm">
-                      Understand key concepts and walk through a practical explanation strategy.
-                    </CardDescription>
-                  </CardHeader>
+                <CardTitle className="mb-2 min-h-14 text-2xl leading-tight font-semibold text-foreground">
+                  {question.text}
+                </CardTitle>
+                <CardDescription className="mb-5 text-sm">
+                  Understand key concepts and walk through a practical explanation strategy.
+                </CardDescription>
+              </CardHeader>
 
-                  <CardFooter className="justify-between text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <Clock3 className="h-3.5 w-3.5" />
-                      {question.minutes} min
-                    </span>
-                    <span>Added {question.addedDaysAgo} days ago</span>
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
+              <CardFooter className="justify-between text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Clock3 className="h-3.5 w-3.5" />
+                  {question.minutes} min
+                </span>
+                <span>Added {question.addedDaysAgo} days ago</span>
+              </CardFooter>
+            </Card>
+          </Link>
+        ))}
       </div>
 
       <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 md:hidden">
-        {isLoading
-          ? mobileSkeletonKeys.map((key) => (
-              <CardSkeleton
-                key={key}
-                className="w-[min(85vw,26rem)] shrink-0 snap-start bg-card/80 py-4 ring-border/80 [--card-spacing:--spacing(4)]"
-              />
-            ))
-          : recentlyAdded.map((question) => (
-              <Link
-                key={question.id}
-                href={'/topics' as Route}
-                className="group w-[min(85vw,26rem)] shrink-0 snap-start"
-              >
-                <Card className="h-full rounded-2xl bg-card/80 py-4 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(4)]">
-                  <CardHeader className="gap-0">
-                    <div className="mb-3 flex items-center justify-between gap-2 text-xs">
-                      <span
-                        className={`rounded-full px-2.5 py-1 font-semibold ${difficultyClasses[question.difficulty]}`}
-                      >
-                        {question.difficulty}
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
-                        <Tag className="h-3.5 w-3.5" />
-                        {question.category}
-                      </span>
-                    </div>
+        {recentQuestions.map((question) => (
+          <Link
+            key={question.id}
+            href={'/topics' as Route}
+            className="group w-[min(85vw,26rem)] shrink-0 snap-start"
+          >
+            <Card className="h-full rounded-2xl bg-card/80 py-4 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(4)]">
+              <CardHeader className="gap-0">
+                <div className="mb-3 flex items-center justify-between gap-2 text-xs">
+                  <span
+                    className={`rounded-full px-2.5 py-1 font-semibold ${difficultyClasses[question.difficulty]}`}
+                  >
+                    {question.difficulty}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
+                    <Tag className="h-3.5 w-3.5" />
+                    {question.category}
+                  </span>
+                </div>
 
-                    <CardTitle className="mb-2 text-2xl leading-tight font-semibold text-foreground">
-                      {question.text}
-                    </CardTitle>
-                    <CardDescription className="mb-5 text-sm">
-                      Understand key concepts and walk through a practical explanation strategy.
-                    </CardDescription>
-                  </CardHeader>
+                <CardTitle className="mb-2 text-2xl leading-tight font-semibold text-foreground">
+                  {question.text}
+                </CardTitle>
+                <CardDescription className="mb-5 text-sm">
+                  Understand key concepts and walk through a practical explanation strategy.
+                </CardDescription>
+              </CardHeader>
 
-                  <CardFooter className="justify-between text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <Clock3 className="h-3.5 w-3.5" />
-                      {question.minutes} min
-                    </span>
-                    <span>Added {question.addedDaysAgo} days ago</span>
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
+              <CardFooter className="justify-between text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Clock3 className="h-3.5 w-3.5" />
+                  {question.minutes} min
+                </span>
+                <span>Added {question.addedDaysAgo} days ago</span>
+              </CardFooter>
+            </Card>
+          </Link>
+        ))}
       </div>
     </section>
   );

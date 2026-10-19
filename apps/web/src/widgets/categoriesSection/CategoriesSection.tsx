@@ -10,56 +10,29 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/ui/Card';
-import { CardSkeleton } from '@/shared/ui/CardSkeleton';
 
 type Category = {
+  category: string;
   name: string;
   description: string;
-  topicCount: number;
-  questionCount: number;
-  icon: ComponentType<{ className?: string }>;
+  topicsCount: number;
+  questionsCount: number;
 };
 
-const categories: Category[] = [
-  {
-    name: 'JavaScript',
-    description: 'Core concepts, ES6+, async, and more.',
-    topicCount: 42,
-    questionCount: 320,
-    icon: Cpu,
-  },
-  {
-    name: 'React',
-    description: 'Components, hooks, state management, etc.',
-    topicCount: 38,
-    questionCount: 280,
-    icon: Boxes,
-  },
-  {
-    name: 'Node.js',
-    description: 'Runtime, APIs, databases, auth, and more.',
-    topicCount: 36,
-    questionCount: 260,
-    icon: Database,
-  },
-  {
-    name: 'System Design',
-    description: 'Architecture, scalability, databases, and more.',
-    topicCount: 28,
-    questionCount: 180,
-    icon: BookOpenCheck,
-  },
-];
+const categoryIconMap: Record<string, ComponentType<{ className?: string }>> = {
+  javascript: Cpu,
+  react: Boxes,
+  nodejs: Database,
+  'node.js': Database,
+  'system-design': BookOpenCheck,
+};
 
-export const CategoriesSection = () => {
-  // Temporary toggle for loading-state UI preview.
-  const isLoading = false;
-  const fallbackSkeletonKeys = [
-    'category-skeleton-1',
-    'category-skeleton-2',
-    'category-skeleton-3',
-    'category-skeleton-4',
-  ] as const;
+const resolveCategoryIcon = (categorySlug: string) => {
+  return categoryIconMap[categorySlug] ?? BookOpenCheck;
+};
+
+export const CategoriesSection = ({ categories }: { categories: Category[] }) => {
+  const categoryItems = categories ?? [];
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-10 md:px-6 md:py-12">
@@ -85,58 +58,51 @@ export const CategoriesSection = () => {
 
       <div className="-mx-4 overflow-x-auto px-4 pt-1 pb-1 md:mx-0 md:overflow-visible md:px-0">
         <div className="flex w-max gap-3 md:grid md:w-full md:grid-cols-2 md:gap-4 lg:grid-cols-4">
-          {isLoading
-            ? fallbackSkeletonKeys.map((key) => (
-                <CardSkeleton
-                  key={key}
-                  className="h-full w-[16rem] bg-card/80 p-4 md:w-auto md:p-5"
-                />
-              ))
-            : categories.map((category) => {
-                const Icon = category.icon;
+          {categoryItems.map((category) => {
+            const Icon = resolveCategoryIcon(category.category);
 
-                return (
-                  <Link
-                    key={category.name}
-                    href={`/topics?category=${encodeURIComponent(category.name)}` as Route}
-                    className="group w-[16rem] md:w-auto"
-                  >
-                    <Card className="relative h-full rounded-2xl bg-card/80 p-4 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:shadow-lg group-hover:ring-accent/50 md:p-5">
-                      <CardHeader className="gap-0 p-0">
-                        <div className="mb-4 inline-flex w-fit rounded-lg border border-accent/30 bg-accent/12 p-2.5 text-accent">
-                          <Icon className="h-5 w-5" />
-                        </div>
+            return (
+              <Link
+                key={category.name}
+                href={`/topics?category=${encodeURIComponent(category.category)}` as Route}
+                className="group w-[16rem] md:w-auto"
+              >
+                <Card className="relative h-full rounded-2xl bg-card/80 p-4 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:shadow-lg group-hover:ring-accent/50 md:p-5">
+                  <CardHeader className="gap-0 p-0">
+                    <div className="mb-4 inline-flex w-fit rounded-lg border border-accent/30 bg-accent/12 p-2.5 text-accent">
+                      <Icon className="h-5 w-5" />
+                    </div>
 
-                        <div className="absolute top-4 right-4 hidden h-7 w-7 items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition-colors group-hover:text-foreground md:flex">
-                          <ArrowRight className="h-3.5 w-3.5" />
-                        </div>
+                    <div className="absolute top-4 right-4 hidden h-7 w-7 items-center justify-center rounded-full border border-border/70 bg-background/70 text-muted-foreground transition-colors group-hover:text-foreground md:flex">
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </div>
 
-                        <CardTitle className="mb-1 text-lg">{category.name}</CardTitle>
-                        <CardDescription className="mb-4 leading-relaxed">
-                          {category.description}
-                        </CardDescription>
-                      </CardHeader>
+                    <CardTitle className="mb-1 text-lg">{category.name}</CardTitle>
+                    <CardDescription className="mb-4 leading-relaxed">
+                      {category.description}
+                    </CardDescription>
+                  </CardHeader>
 
-                      <CardContent className="p-0 md:hidden">
-                        <p className="text-sm text-muted-foreground">
-                          {category.questionCount} questions
-                        </p>
-                      </CardContent>
+                  <CardContent className="p-0 md:hidden">
+                    <p className="text-sm text-muted-foreground">
+                      {category.questionsCount} questions
+                    </p>
+                  </CardContent>
 
-                      <CardFooter className="hidden items-center gap-4 p-0 text-xs text-muted-foreground md:flex">
-                        <span className="inline-flex items-center gap-1">
-                          <BookOpenCheck className="h-3.5 w-3.5" />
-                          {category.topicCount} Topics
-                        </span>
-                        <span className="inline-flex items-center gap-1">
-                          <FileText className="h-3.5 w-3.5" />
-                          {category.questionCount} Questions
-                        </span>
-                      </CardFooter>
-                    </Card>
-                  </Link>
-                );
-              })}
+                  <CardFooter className="hidden items-center gap-4 p-0 text-xs text-muted-foreground md:flex">
+                    <span className="inline-flex items-center gap-1">
+                      <BookOpenCheck className="h-3.5 w-3.5" />
+                      {category.topicsCount} Topics
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <FileText className="h-3.5 w-3.5" />
+                      {category.questionsCount} Questions
+                    </span>
+                  </CardFooter>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

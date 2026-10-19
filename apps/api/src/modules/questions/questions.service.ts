@@ -67,6 +67,10 @@ export function createQuestionsService(repo: QuestionsRepository) {
       if (!question) throw new Error('Failed to update question status');
       return { question };
     },
+
+    async recent(limit: number = 10) {
+      return { questions: await repo.recent(limit) };
+    },
   };
 }
 

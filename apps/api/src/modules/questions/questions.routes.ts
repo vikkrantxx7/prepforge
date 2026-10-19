@@ -16,6 +16,7 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
     { preHandler: [app.authenticate] },
     async (request, reply) => {
       const result = await service.create(request.body);
+
       return reply.status(201).send(result);
     },
   );
@@ -37,6 +38,7 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
     { preHandler: [app.authenticate] },
     async (request, reply) => {
       await service.delete(request.params.id);
+
       return reply.status(204).send();
     },
   );
@@ -56,4 +58,10 @@ export const questionsRoutes: FastifyPluginAsync = async (app) => {
       return service.setStatus(request.params.id, 'draft');
     },
   );
+
+  app.get<{ Querystring: { limit?: number } }>('/recent', async (request) => {
+    const limit = request.query.limit;
+
+    return service.recent(limit);
+  });
 };

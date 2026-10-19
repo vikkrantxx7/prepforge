@@ -1,4 +1,4 @@
-import { arrayContains, eq } from 'drizzle-orm';
+import { arrayContains, desc, eq } from 'drizzle-orm';
 import { db } from '../../db/index.js';
 import { questions } from '../../db/schema.js';
 
@@ -26,10 +26,12 @@ export function createQuestionsRepository() {
     },
     async findById(id: string) {
       const [row] = await db.select().from(questions).where(eq(questions.id, id));
+
       return row ? mapQuestion(row) : null;
     },
     async create(data: typeof questions.$inferInsert) {
       const [row] = await db.insert(questions).values(data).returning();
+
       return row ? mapQuestion(row) : null;
     },
     async update(id: string, data: Partial<typeof questions.$inferInsert>) {
@@ -38,10 +40,20 @@ export function createQuestionsRepository() {
         .set({ ...data, updatedAt: new Date().toISOString() })
         .where(eq(questions.id, id))
         .returning();
+
       return row ? mapQuestion(row) : null;
     },
     async delete(id: string) {
       await db.delete(questions).where(eq(questions.id, id));
+    },
+    async recent(limit: number) {
+      const rows = await db
+        .select()
+        .from(questions)
+        .orderBy(desc(questions.createdAt))
+        .limit(limit);
+
+      return rows.map(mapQuestion);
     },
   };
 }

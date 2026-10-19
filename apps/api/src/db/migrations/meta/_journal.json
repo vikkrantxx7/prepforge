@@ -43,6 +43,13 @@
       "when": 1790668759274,
       "tag": "0005_luxuriant_paibok",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792420373826,
+      "tag": "0006_mute_fat_cobra",
+      "breakpoints": true
     }
   ]
 }

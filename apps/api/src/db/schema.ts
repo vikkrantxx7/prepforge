@@ -1,10 +1,21 @@
 import { jsonb, pgTable, primaryKey, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 
+export const categories = pgTable('categories', {
+  id: text('id').primaryKey(),
+  slug: varchar('slug', { length: 60 }).notNull().unique(),
+  name: varchar('name', { length: 60 }).notNull(),
+  description: text('description'),
+  createdAt: timestamp('created_at', { mode: 'string', withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true }),
+});
+
 export const topics = pgTable('topics', {
   id: text('id').primaryKey(),
   name: varchar('name', { length: 60 }).notNull(),
   slug: varchar('slug', { length: 60 }).notNull().unique(),
-  category: varchar('category', { length: 60 }).notNull(),
+  category: varchar('category', { length: 60 })
+    .notNull()
+    .references(() => categories.slug, { onUpdate: 'cascade' }),
   description: text('description'),
   createdAt: timestamp('created_at', { mode: 'string', withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true }),
