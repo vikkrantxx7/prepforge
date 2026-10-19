@@ -1,14 +1,8 @@
 import { ArrowRight, Clock3, Tag } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/shared/ui/Card';
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/Card';
+import { CardSkeleton } from '@/shared/ui/CardSkeleton';
 
 type RecentQuestion = {
   id: string;
@@ -53,18 +47,25 @@ const difficultyClasses: Record<RecentQuestion['difficulty'], string> = {
 };
 
 export const RecentlyAddedSection = () => {
-  const featured = recentlyAdded[1];
-
-  if (!featured) {
-    return null;
-  }
+  // Temporary toggle for loading-state UI preview.
+  const isLoading = true;
+  const desktopSkeletonKeys = [
+    'recent-desktop-skeleton-1',
+    'recent-desktop-skeleton-2',
+    'recent-desktop-skeleton-3',
+  ] as const;
+  const mobileSkeletonKeys = [
+    'recent-mobile-skeleton-1',
+    'recent-mobile-skeleton-2',
+    'recent-mobile-skeleton-3',
+  ] as const;
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-10 md:px-6 md:py-12">
       <div className="mb-5 flex items-end justify-between gap-4">
         <div className="space-y-1">
           <h2 className="hidden font-heading text-3xl font-semibold md:block">Recently Added</h2>
-          <h2 className="font-heading text-3xl font-semibold md:hidden">Featured Question</h2>
+          <h2 className="font-heading text-3xl font-semibold md:hidden">Recently Added</h2>
           <p className="text-sm text-muted-foreground">
             Check out the latest questions added to help you practice.
           </p>
@@ -80,85 +81,96 @@ export const RecentlyAddedSection = () => {
       </div>
 
       <div className="hidden grid-cols-3 gap-4 md:grid">
-        {recentlyAdded.map((question) => (
-          <Link key={question.id} href={'/topics' as Route} className="group">
-            <Card className="h-full rounded-2xl bg-card/80 py-5 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(5)]">
-              <CardHeader className="gap-0">
-                <div className="mb-4 flex items-center justify-between gap-2">
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${difficultyClasses[question.difficulty]}`}
-                  >
-                    {question.difficulty}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                    <Tag className="h-3.5 w-3.5" />
-                    {question.category}
-                  </span>
-                </div>
+        {isLoading
+          ? desktopSkeletonKeys.map((key) => (
+              <CardSkeleton
+                key={key}
+                className="h-full bg-card/80 py-5 ring-border/80 [--card-spacing:--spacing(5)]"
+              />
+            ))
+          : recentlyAdded.map((question) => (
+              <Link key={question.id} href={'/topics' as Route} className="group">
+                <Card className="h-full rounded-2xl bg-card/80 py-5 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(5)]">
+                  <CardHeader className="gap-0">
+                    <div className="mb-4 flex items-center justify-between gap-2">
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${difficultyClasses[question.difficulty]}`}
+                      >
+                        {question.difficulty}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        <Tag className="h-3.5 w-3.5" />
+                        {question.category}
+                      </span>
+                    </div>
 
-                <CardTitle className="mb-2 min-h-14 text-2xl leading-tight font-semibold text-foreground">
-                  {question.text}
-                </CardTitle>
-                <CardDescription className="mb-5 text-sm">
-                  Understand key concepts and walk through a practical explanation strategy.
-                </CardDescription>
-              </CardHeader>
+                    <CardTitle className="mb-2 min-h-14 text-2xl leading-tight font-semibold text-foreground">
+                      {question.text}
+                    </CardTitle>
+                    <CardDescription className="mb-5 text-sm">
+                      Understand key concepts and walk through a practical explanation strategy.
+                    </CardDescription>
+                  </CardHeader>
 
-              <CardFooter className="justify-between text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  <Clock3 className="h-3.5 w-3.5" />
-                  {question.minutes} min
-                </span>
-                <span>Added {question.addedDaysAgo} days ago</span>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
+                  <CardFooter className="justify-between text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <Clock3 className="h-3.5 w-3.5" />
+                      {question.minutes} min
+                    </span>
+                    <span>Added {question.addedDaysAgo} days ago</span>
+                  </CardFooter>
+                </Card>
+              </Link>
+            ))}
       </div>
 
-      <Card className="rounded-2xl bg-card/80 py-4 ring-border/80 md:hidden [--card-spacing:--spacing(4)]">
-        <CardHeader className="gap-0">
-          <div className="mb-3 flex items-center gap-2 text-xs">
-            <span className="inline-flex rounded-full bg-accent/15 px-2.5 py-1 font-semibold text-accent">
-              {featured.difficulty}
-            </span>
-            <span className="inline-flex rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
-              {featured.category}
-            </span>
-          </div>
+      <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 md:hidden">
+        {isLoading
+          ? mobileSkeletonKeys.map((key) => (
+              <CardSkeleton
+                key={key}
+                className="w-[min(85vw,26rem)] shrink-0 snap-start bg-card/80 py-4 ring-border/80 [--card-spacing:--spacing(4)]"
+              />
+            ))
+          : recentlyAdded.map((question) => (
+              <Link
+                key={question.id}
+                href={'/topics' as Route}
+                className="group w-[min(85vw,26rem)] shrink-0 snap-start"
+              >
+                <Card className="h-full rounded-2xl bg-card/80 py-4 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(4)]">
+                  <CardHeader className="gap-0">
+                    <div className="mb-3 flex items-center justify-between gap-2 text-xs">
+                      <span
+                        className={`rounded-full px-2.5 py-1 font-semibold ${difficultyClasses[question.difficulty]}`}
+                      >
+                        {question.difficulty}
+                      </span>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
+                        <Tag className="h-3.5 w-3.5" />
+                        {question.category}
+                      </span>
+                    </div>
 
-          <CardTitle className="mb-2 text-3xl leading-tight font-semibold text-foreground">
-            {featured.text}
-          </CardTitle>
-          <CardDescription className="mb-5 text-sm">
-            Understand how JavaScript handles asynchronous operations using the event loop, call
-            stack, task queue and microtask queue.
-          </CardDescription>
-        </CardHeader>
+                    <CardTitle className="mb-2 text-2xl leading-tight font-semibold text-foreground">
+                      {question.text}
+                    </CardTitle>
+                    <CardDescription className="mb-5 text-sm">
+                      Understand key concepts and walk through a practical explanation strategy.
+                    </CardDescription>
+                  </CardHeader>
 
-        <CardContent className="justify-between text-xs text-muted-foreground">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1">
-              <Clock3 className="h-3.5 w-3.5" />
-              {featured.minutes} min read
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Tag className="h-3.5 w-3.5" />
-              Added {featured.addedDaysAgo} days ago
-            </span>
-          </div>
-        </CardContent>
-
-        <CardFooter className="justify-end">
-          <Link
-            href={'/topics' as Route}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-muted-foreground"
-          >
-            <ArrowRight className="h-4 w-4" />
-            <span className="sr-only">Open featured question</span>
-          </Link>
-        </CardFooter>
-      </Card>
+                  <CardFooter className="justify-between text-xs text-muted-foreground">
+                    <span className="inline-flex items-center gap-1">
+                      <Clock3 className="h-3.5 w-3.5" />
+                      {question.minutes} min
+                    </span>
+                    <span>Added {question.addedDaysAgo} days ago</span>
+                  </CardFooter>
+                </Card>
+              </Link>
+            ))}
+      </div>
     </section>
   );
 };
