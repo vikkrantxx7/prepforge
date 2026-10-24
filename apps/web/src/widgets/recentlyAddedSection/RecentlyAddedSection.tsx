@@ -1,12 +1,14 @@
-import { ArrowRight, Clock3, Tag } from 'lucide-react';
+import { ArrowRight, Clock3 } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/Card';
+import { resolveCategoryIcon } from '@/shared/ui/icons/categoryIconMap';
 
 type RecentQuestion = {
   id: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   category: string;
+  categoryName: string;
   text: string;
   minutes: number;
   addedDaysAgo: number;
@@ -42,81 +44,89 @@ export const RecentlyAddedSection = ({ questions }: { questions: RecentQuestion[
       </div>
 
       <div className="hidden grid-cols-3 gap-4 md:grid">
-        {recentQuestions.map((question) => (
-          <Link key={question.id} href={'/topics' as Route} className="group">
-            <Card className="h-full rounded-2xl bg-card/80 py-5 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(5)]">
-              <CardHeader className="gap-0">
-                <div className="mb-4 flex items-center justify-between gap-2">
-                  <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${difficultyClasses[question.difficulty]}`}
-                  >
-                    {question.difficulty}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                    <Tag className="h-3.5 w-3.5" />
-                    {question.category}
-                  </span>
-                </div>
+        {recentQuestions.map((question) => {
+          const Icon = resolveCategoryIcon(question.category);
 
-                <CardTitle className="mb-2 min-h-14 text-2xl leading-tight font-semibold text-foreground">
-                  {question.text}
-                </CardTitle>
-                <CardDescription className="mb-5 text-sm">
-                  Understand key concepts and walk through a practical explanation strategy.
-                </CardDescription>
-              </CardHeader>
+          return (
+            <Link key={question.id} href={'/topics' as Route} className="group">
+              <Card className="h-full rounded-2xl bg-card/80 py-5 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(5)]">
+                <CardHeader className="gap-0">
+                  <div className="mb-4 flex items-center justify-between gap-2">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${difficultyClasses[question.difficulty]}`}
+                    >
+                      {question.difficulty}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                      <Icon className="h-3.5 w-3.5" />
+                      {question.categoryName}
+                    </span>
+                  </div>
 
-              <CardFooter className="justify-between text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  <Clock3 className="h-3.5 w-3.5" />
-                  {question.minutes} min
-                </span>
-                <span>Added {question.addedDaysAgo} days ago</span>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
+                  <CardTitle className="mb-2 min-h-14 text-2xl leading-tight font-semibold text-foreground">
+                    {question.text}
+                  </CardTitle>
+                  <CardDescription className="mb-5 text-sm">
+                    Understand key concepts and walk through a practical explanation strategy.
+                  </CardDescription>
+                </CardHeader>
+
+                <CardFooter className="justify-between text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <Clock3 className="h-3.5 w-3.5" />
+                    {question.minutes} min
+                  </span>
+                  <span>Added {question.addedDaysAgo} days ago</span>
+                </CardFooter>
+              </Card>
+            </Link>
+          );
+        })}
       </div>
 
       <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 md:hidden">
-        {recentQuestions.map((question) => (
-          <Link
-            key={question.id}
-            href={'/topics' as Route}
-            className="group w-[min(85vw,26rem)] shrink-0 snap-start"
-          >
-            <Card className="h-full rounded-2xl bg-card/80 py-4 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(4)]">
-              <CardHeader className="gap-0">
-                <div className="mb-3 flex items-center justify-between gap-2 text-xs">
-                  <span
-                    className={`rounded-full px-2.5 py-1 font-semibold ${difficultyClasses[question.difficulty]}`}
-                  >
-                    {question.difficulty}
-                  </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
-                    <Tag className="h-3.5 w-3.5" />
-                    {question.category}
-                  </span>
-                </div>
+        {recentQuestions.map((question) => {
+          const Icon = resolveCategoryIcon(question.category);
 
-                <CardTitle className="mb-2 text-2xl leading-tight font-semibold text-foreground">
-                  {question.text}
-                </CardTitle>
-                <CardDescription className="mb-5 text-sm">
-                  Understand key concepts and walk through a practical explanation strategy.
-                </CardDescription>
-              </CardHeader>
+          return (
+            <Link
+              key={question.id}
+              href={'/topics' as Route}
+              className="group w-[min(85vw,26rem)] shrink-0 snap-start"
+            >
+              <Card className="h-full rounded-2xl bg-card/80 py-4 ring-border/80 transition-all group-hover:-translate-y-0.5 group-hover:ring-accent/50 group-hover:shadow-lg [--card-spacing:--spacing(4)]">
+                <CardHeader className="gap-0">
+                  <div className="mb-3 flex items-center justify-between gap-2 text-xs">
+                    <span
+                      className={`rounded-full px-2.5 py-1 font-semibold ${difficultyClasses[question.difficulty]}`}
+                    >
+                      {question.difficulty}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
+                      <Icon className="h-3.5 w-3.5" />
+                      {question.categoryName}
+                    </span>
+                  </div>
 
-              <CardFooter className="justify-between text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  <Clock3 className="h-3.5 w-3.5" />
-                  {question.minutes} min
-                </span>
-                <span>Added {question.addedDaysAgo} days ago</span>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
+                  <CardTitle className="mb-2 text-2xl leading-tight font-semibold text-foreground">
+                    {question.text}
+                  </CardTitle>
+                  <CardDescription className="mb-5 text-sm">
+                    Understand key concepts and walk through a practical explanation strategy.
+                  </CardDescription>
+                </CardHeader>
+
+                <CardFooter className="justify-between text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <Clock3 className="h-3.5 w-3.5" />
+                    {question.minutes} min
+                  </span>
+                  <span>Added {question.addedDaysAgo} days ago</span>
+                </CardFooter>
+              </Card>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

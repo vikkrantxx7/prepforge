@@ -1,7 +1,6 @@
-import { ArrowRight, BookOpenCheck, Boxes, Cpu, Database, FileText } from 'lucide-react';
+import { ArrowRight, BookOpenCheck, FileText } from 'lucide-react';
 import type { Route } from 'next';
 import Link from 'next/link';
-import type { ComponentType } from 'react';
 import {
   Card,
   CardContent,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/ui/Card';
+import { resolveCategoryIcon } from '@/shared/ui/icons/categoryIconMap';
 
 type Category = {
   category: string;
@@ -17,18 +17,6 @@ type Category = {
   description: string;
   topicsCount: number;
   questionsCount: number;
-};
-
-const categoryIconMap: Record<string, ComponentType<{ className?: string }>> = {
-  javascript: Cpu,
-  react: Boxes,
-  nodejs: Database,
-  'node.js': Database,
-  'system-design': BookOpenCheck,
-};
-
-const resolveCategoryIcon = (categorySlug: string) => {
-  return categoryIconMap[categorySlug] ?? BookOpenCheck;
 };
 
 export const CategoriesSection = ({ categories }: { categories: Category[] }) => {

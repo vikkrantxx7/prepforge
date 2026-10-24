@@ -1,6 +1,6 @@
-import { arrayContains, desc, eq } from 'drizzle-orm';
+import { arrayContains, desc, eq, inArray } from 'drizzle-orm';
 import { db } from '../../db/index.js';
-import { questions } from '../../db/schema.js';
+import { categories, questions, topics } from '../../db/schema.js';
 
 export type Question = typeof questions.$inferSelect;
 
@@ -54,6 +54,26 @@ export function createQuestionsRepository() {
         .limit(limit);
 
       return rows.map(mapQuestion);
+    },
+    async findTopicCategories(topicIds: string[]) {
+      if (topicIds.length === 0) {
+        return [];
+      }
+
+      return db
+        .select({ id: topics.id, category: topics.category })
+        .from(topics)
+        .where(inArray(topics.id, topicIds));
+    },
+    async findCategoryNames(categorySlugs: string[]) {
+      if (categorySlugs.length === 0) {
+        return [];
+      }
+
+      return db
+        .select({ slug: categories.slug, name: categories.name })
+        .from(categories)
+        .where(inArray(categories.slug, categorySlugs));
     },
   };
 }

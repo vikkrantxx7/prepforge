@@ -13,6 +13,7 @@ export type RecentQuestionsDto = {
   id: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   category: string;
+  categoryName: string;
   text: string;
   minutes: number;
   addedDaysAgo: number;
@@ -47,9 +48,10 @@ const mapRecentQuestions = (
     return {
       id: question.id,
       difficulty: difficultyLabelMap[difficulty],
-      category: 'General',
+      category: question.category ?? '',
+      categoryName: question.categoryName ?? 'General',
       text: question.text,
-      minutes: 8,
+      minutes: question.readMinutes,
       addedDaysAgo: getAddedDaysAgo(question.createdAt),
     };
   });

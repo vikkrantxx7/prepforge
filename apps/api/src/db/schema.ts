@@ -24,7 +24,7 @@ export const topics = pgTable('topics', {
 export const questions = pgTable('questions', {
   id: text('id').primaryKey(),
   text: text('text').notNull(),
-  topicIds: text('topic_ids').array(),
+  topicIds: text('topic_ids').array().notNull(),
   difficultyContext: jsonb('difficulty_context'),
   answerTiers: jsonb('answer_tiers'),
   interviewerIntent: text('interviewer_intent'),

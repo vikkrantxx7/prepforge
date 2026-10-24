@@ -7,8 +7,53 @@ import {
 import { notFoundError } from '../../lib/errors.js';
 import type { QuestionsRepository } from './questions.repository.js';
 
+const WORDS_PER_MINUTE = 225;
+const DEFAULT_RECENT_LIMIT = 10;
+const MIN_RECENT_LIMIT = 1;
+const MAX_RECENT_LIMIT = 50;
+
 function sanitizeTags(tags: string[]) {
   return [...new Set(tags.map((s) => s.trim().toLowerCase()).filter(Boolean))];
+}
+
+type RecentQuestionRow = Awaited<ReturnType<QuestionsRepository['recent']>>[number];
+
+function collectReadableSegments(row: RecentQuestionRow) {
+  const segments: string[] = [row.text, row.interviewerIntent ?? ''];
+
+  if (Array.isArray(row.hints)) {
+    segments.push(...row.hints.filter((hint): hint is string => typeof hint === 'string'));
+  }
+
+  if (row.answerTiers && typeof row.answerTiers === 'object') {
+    const tiers = row.answerTiers as Record<string, unknown>;
+
+    for (const value of Object.values(tiers)) {
+      if (typeof value === 'string') {
+        segments.push(value);
+      }
+    }
+  }
+
+  return segments;
+}
+
+function estimateReadMinutes(row: RecentQuestionRow) {
+  const text = collectReadableSegments(row).join(' ').trim();
+
+  if (!text) {
+    return 1;
+  }
+
+  const words = text.split(/\s+/).length;
+
+  return Math.max(1, Math.ceil(words / WORDS_PER_MINUTE));
+}
+
+function normalizeRecentLimit(limit?: number) {
+  const parsedLimit = Number.isFinite(limit) ? Number(limit) : DEFAULT_RECENT_LIMIT;
+
+  return Math.min(MAX_RECENT_LIMIT, Math.max(MIN_RECENT_LIMIT, parsedLimit));
 }
 
 export function createQuestionsService(repo: QuestionsRepository) {
@@ -68,8 +113,33 @@ export function createQuestionsService(repo: QuestionsRepository) {
       return { question };
     },
 
-    async recent(limit: number = 10) {
-      return { questions: await repo.recent(limit) };
+    async recent(limit?: number) {
+      const safeLimit = normalizeRecentLimit(limit);
+      const rows = await repo.recent(safeLimit);
+
+      const topicIds = [...new Set(rows.flatMap((row) => row.topicIds ?? []))];
+      const topicRows = await repo.findTopicCategories(topicIds);
+
+      const categorySlugs = [...new Set(topicRows.map((row) => row.category))];
+      const categoryRows = await repo.findCategoryNames(categorySlugs);
+
+      const topicCategoryMap = new Map(topicRows.map((row) => [row.id, row.category]));
+      const categoryNameMap = new Map(categoryRows.map((row) => [row.slug, row.name]));
+
+      const questions = rows.map((row) => {
+        const primaryTopicId = row.topicIds?.[0] ?? null;
+        const categorySlug = primaryTopicId ? (topicCategoryMap.get(primaryTopicId) ?? null) : null;
+        const categoryName = categorySlug ? (categoryNameMap.get(categorySlug) ?? null) : null;
+
+        return {
+          ...row,
+          category: categorySlug,
+          categoryName,
+          readMinutes: estimateReadMinutes(row),
+        };
+      });
+
+      return { questions };
     },
   };
 }

@@ -13,6 +13,9 @@ export type QuestionApiModel = {
   difficultyContext: QuestionDifficultyContext[] | null;
   status: string;
   createdAt: string;
+  category: string | null;
+  categoryName: string | null;
+  readMinutes: number;
 };
 
 type RecentQuestionsResponse = {
