@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useId } from 'react';
 import { buttonVariants } from '@/shared/ui/Button';
+import styles from './HeroSection.module.css';
 
 const stats = [
   { label: 'Curated Questions', value: '1,500+', icon: Code2 },
@@ -89,7 +90,11 @@ export const HeroSection = () => {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
           <Link
             href={'/topics' as Route}
-            className={buttonVariants({ size: 'lg', className: 'h-12 gap-2 px-5 text-base' })}
+            className={buttonVariants({
+              variant: 'outline',
+              size: 'lg',
+              className: `${styles.fxGradientframe} h-12 gap-2 px-5 text-base`,
+            })}
           >
             <Play className="h-4 w-4" />
             Explore Topics

@@ -1,0 +1,79 @@
+@property --gf-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes fx-gradientframe-spin {
+  to {
+    --gf-angle: 360deg;
+  }
+}
+
+.fxGradientframe {
+  --ink: currentColor;
+  --ink-2: #ff4fd8;
+  --ink-3: #4ff8ff;
+
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--ink, currentColor);
+  background: linear-gradient(var(--background), var(--background));
+}
+
+.fxGradientframe::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: conic-gradient(from var(--gf-angle), #ff4fd8, #7a5cff, #4ff8ff, #ffd76a, #ff4fd8);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: fx-gradientframe-spin 5.5s linear infinite;
+  pointer-events: none;
+}
+
+.fxGradientframe::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: calc(var(--radius) + 12px);
+  pointer-events: none;
+  background: conic-gradient(from var(--gf-angle), #ff4fd83d, #4ff8ff3d, transparent 62%);
+  filter: blur(12px);
+  animation: fx-gradientframe-spin 5.5s linear infinite;
+  opacity: 0.8;
+  z-index: -1;
+}
+
+.fxGradientframe:hover {
+  transform: translateY(-1px);
+}
+
+.fxGradientframe:focus-visible {
+  box-shadow: 0 0 0 3px oklch(0.62 0.13 250 / 0.3);
+}
+
+:global(.dark) .fxGradientframe {
+  color: var(--foreground);
+  background: linear-gradient(oklch(0.17 0.03 252 / 0.85), oklch(0.14 0.03 252 / 0.82));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fxGradientframe::before,
+  .fxGradientframe::after {
+    animation: none;
+  }
+}
